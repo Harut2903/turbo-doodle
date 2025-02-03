@@ -1,7 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { changeText, addTodo, getAsyncTodo } from './slices/todoSlice'
+import { getAsyncTodo } from './slices/todoSlice'
 import './App.css'
 import { useEffect } from 'react'
+import Todo from './components/Todos/Todo'
+import { MyContext } from './context';
 
 
 function App() {
@@ -10,24 +12,21 @@ function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getAsyncTodo(8))
+    dispatch(getAsyncTodo(5))
   }, [])
+
+  const value =  {
+    text,
+    todos,
+    loading,
+    dispatch
+  }
 
   return (
     <div className='App'>
-        <input value={text} onChange={(e) => dispatch(changeText(e.target.value))}/>
-        <button onClick={() => dispatch(addTodo())}>+</button>
-
-
-        {
-          loading 
-          ?
-          <h1>Loading...</h1>
-          :
-          todos.map((todo) => {
-            return <li key={todo.id}>{todo.title}</li>
-          })
-        }
+       <MyContext.Provider value={value}>
+        <Todo />
+        </MyContext.Provider>
     </div>
   )
 }

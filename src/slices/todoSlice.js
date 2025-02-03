@@ -23,20 +23,40 @@ const todoSlice = createSlice({
       state.text = action.payload;
     },
     addTodo(state) {
-      state.todos = [...state.todos, { id: Date.now(), title: state.text }];
-      state.text = "";
+      if (state.text.trim()) {
+        state.todos = [...state.todos, { id: Date.now(), title: state.text }];
+        state.text = "";
+      }
+    },
+    editTodo(state, action) {
+      const todo = state.todos.find((todo) => todo.id === action.payload.id);
+      if (todo) {
+        todo.title = action.payload.title;
+      }
+    },
+    deleteTodo(state, action) {
+      state.todos = state.todos.filter((todo) => todo.id !== action.payload);
+    },
+    toggleComplete(state, action) {
+      const todo = state.todos.find((todo) => todo.id === action.payload);
+      if (todo) {
+        todo.completed = !todo.completed;
+      }
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getAsyncTodo.pending, (state, action) => {
+    builder.addCase(getAsyncTodo.pending, (state) => {
       state.loading = true;
     });
     builder.addCase(getAsyncTodo.fulfilled, (state, action) => {
       state.loading = false;
-      state.todos = action.payload;
+      state.todos = action.payload.map(todo => ({
+        ...todo,
+        completed: false
+      }));
     });
   },
 });
 
-export const { changeText, addTodo} = todoSlice.actions;
+export const { changeText, addTodo, editTodo, deleteTodo, toggleComplete } = todoSlice.actions;
 export default todoSlice.reducer;
